@@ -1,0 +1,52 @@
+//
+//  PrefixHeader.pch
+//  BaiduMapKitFind
+//
+//  Created by ginlong on 2018/1/22.
+//  Copyright © 2018年 ginlong. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#import <BaiduMapAPI_Base/BMKBaseComponent.h>//引入base相关所有的头文件
+
+#import <BaiduMapAPI_Map/BMKMapComponent.h>//引入地图功能所有的头文件
+
+#import <BaiduMapAPI_Search/BMKSearchComponent.h>//引入检索功能所有的头文件
+
+#import <BaiduMapAPI_Cloud/BMKCloudSearchComponent.h>//引入云检索功能所有的头文件
+
+#import <BaiduMapAPI_Location/BMKLocationComponent.h>//引入定位功能所有的头文件
+
+#import <BaiduMapAPI_Utils/BMKUtilsComponent.h>//引入计算工具所有的头文件
+
+#import <BaiduMapAPI_Radar/BMKRadarComponent.h>//引入周边雷达功能所有的头文件
+
+#import <BaiduMapAPI_Map/BMKMapView.h>//只引入所需的单个头文件
+
+#import "BDAnnotation.h"
+#import "RoundAnnotationView.h"
+#import "RectangleAnnotationView.h"
+#import "MapFindViewModel.h"
+
+#define kScreen [UIScreen mainScreen].bounds
+#define kScreenHeight kScreen.size.height
+#define kScreenWidth kScreen.size.width
+#define font(fontSize) [UIFont systemFontOfSize:fontSize]
+
+#define setTextGrayColor [UIColor colorWithRed:118/255. green:118/255. blue:118/255. alpha:1.]
+#define setTextSelectedColor [UIColor colorWithRed:228/255. green:80/255. blue:62/255. alpha:1.]
+#define setLayerBorderColor [UIColor colorWithRed:171/255. green:169/255. blue:164/255. alpha:1.]
+#define setWhiteColor [UIColor whiteColor]
+
+#define WeakSelf __weak __typeof(&*self)weakSelf = self;
+
+
+#endif /* PrefixHeader_pch */
