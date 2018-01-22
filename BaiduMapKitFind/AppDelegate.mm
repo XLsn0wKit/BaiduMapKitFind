@@ -2,7 +2,7 @@
 #import "AppDelegate.h"
 #import "MapFindViewController.h"
 
-BMKMapManager* _mapManager;
+BMKMapManager *_mapManager;
 
 @interface AppDelegate () <BMKGeneralDelegate>
 
@@ -18,13 +18,13 @@ BMKMapManager* _mapManager;
     UINavigationController *navC = [[UINavigationController alloc] initWithRootViewController:[MapFindViewController new]];
     self.window.rootViewController = navC;
     //配置百度地图
-    [self configurationBMKMap];
+    [self initBMKMap];
     return YES;
 }
 
 #pragma mark -- 百度地图
 
-- (void)configurationBMKMap {
+- (void)initBMKMap {
     // 要使用百度地图，请先启动BaiduMapManager
     _mapManager = [[BMKMapManager alloc] init];
     BOOL ret = [_mapManager start:@"uRam3QY7cs3SYVpN0jBDcr6xF5X9TWZF" generalDelegate:self];
