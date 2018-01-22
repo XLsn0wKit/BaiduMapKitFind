@@ -7,13 +7,14 @@
 @property (nonatomic, strong) BMKLocationService *locService;//定位服务
 @property (nonatomic, assign) float zoomValue;//移动或缩放前的比例尺
 @property (nonatomic, assign) CLLocationCoordinate2D oldCoor;//地图移动前中心经纬度
-@property (nonatomic, strong) RectangleAnnotationView *messageA;//记录点击过的大头针。便于点击空白时。把这个大头针缩小为原始大小
+@property (nonatomic, strong) RectangleAnnotationView *rectAnnotation;//记录点击过的大头针。便于点击空白时。把这个大头针缩小为原始大小
 
 @end
 
 @implementation MapFindViewController
 
 #pragma mark -- Life Cycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"显示电站";
@@ -32,7 +33,6 @@
     self.bMapView.delegate = nil; // 不用时，置nil
     self.locService.delegate = nil;
     [self.locService stopUserLocationService];
-  
 }
 
 - (void)dealloc {
@@ -46,7 +46,7 @@
 
 #pragma mark -- UI
 
-/// 核心思想 是利用比例尺判断
+/// 核心思想 是利用比例尺判断   采用真机调试
 - (void)addUI {
     self.bMapView = [[BMKMapView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
     [self.view addSubview:self.bMapView];
@@ -56,8 +56,8 @@
     self.bMapView.showsUserLocation = YES;
     self.bMapView.showMapScaleBar = YES;//显示比例尺
     self.bMapView.mapScaleBarPosition = CGPointMake(10, 75);//比例尺位置
-    self.bMapView.minZoomLevel = 9;
-    self.bMapView.maxZoomLevel = 19;///在手机上当前可使用的级别为3-21级
+    self.bMapView.minZoomLevel = 6;
+    self.bMapView.maxZoomLevel = 18;///在手机上当前可使用的级别为3-21级
     self.bMapView.isSelectedAnnotationViewFront = YES;
     self.bMapView.userTrackingMode = BMKUserTrackingModeNone;
     [self.locService startUserLocationService];
@@ -73,9 +73,21 @@
         CLLocationCoordinate2D coor;
         coor.latitude = placemark.location.coordinate.latitude;
         coor.longitude = placemark.location.coordinate.longitude;
-        self.zoomValue = 11;
+        self.zoomValue = 13;
         self.bMapView.zoomLevel = self.zoomValue;
+        
+        //请求大区
+        [self loadCityAreaHouseWithScale:@"3000"
+                             andLatitude:[NSString stringWithFormat:@"%f", coor.latitude]
+                            andLongitude:[NSString stringWithFormat:@"%f", coor.longitude]
+                                andBlock:^{
+                                
+                            }];
+
+        
     }];
+    
+    
 }
 
 #pragma mark -- 回到用户的位置。
@@ -155,8 +167,8 @@
         }
         //请求大区
         [self loadCityAreaHouseWithScale:@"3000"
-                             andLatitude:@"32.041544"
-                            andLongitude:@"118.767413"
+                             andLatitude:[NSString stringWithFormat:@"%f",mapView.centerCoordinate.latitude]
+                            andLongitude:[NSString stringWithFormat:@"%f",mapView.centerCoordinate.longitude]
                                 andBlock:^{
             
         }];
@@ -315,23 +327,13 @@
         NSLog(@"点击了个人位置");
         return;
     }
-    
     BDAnnotation *annotation = (BDAnnotation *)view.annotation;
-
     if (annotation.type == 2) {
-        
         RectangleAnnotationView *messageAnno = (RectangleAnnotationView *)view;
-        
         //让点击的大头针放大效果
         [messageAnno didSelectedAnnotation:messageAnno];
-        
-        self.messageA = messageAnno;
+        self.rectAnnotation = messageAnno;
         annotation.messageAnnoIsBig = @"yes";
-        //取消大头针的选中状态，否则下次再点击同一个则无法响应事件
-//        [mapView deselectAnnotation:annotationView animated:NO];
-        //计算距离 --> 请求列表数据 --> 完成 --> 展示表格
-//        self.communityId = annotationView.Id;
-
     } else {
         //点击了区域--->进入小区
         //拿到大头针经纬度，放大地图。然后重新计算小区
@@ -341,10 +343,10 @@
 }
 
 - (void)mapView:(BMKMapView *)mapView didDeselectAnnotationView:(BMKAnnotationView *)view {
-    BDAnnotation *annotationView = (BDAnnotation *)view.annotation;
-    if (annotationView.type == 2) {
+    BDAnnotation *annotation = (BDAnnotation *)view.annotation;
+    if (annotation.type == 2) {
         RectangleAnnotationView *messageAnno = (RectangleAnnotationView *)view;
-        annotationView.messageAnnoIsBig = @"no";
+        annotation.messageAnnoIsBig = @"no";
         [messageAnno didDeSelectedAnnotation:messageAnno];
         [mapView mapForceRefresh];
     }

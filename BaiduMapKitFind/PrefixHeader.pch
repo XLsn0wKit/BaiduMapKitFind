@@ -48,5 +48,4 @@
 
 #define WeakSelf __weak __typeof(&*self)weakSelf = self;
 
-
 #endif /* PrefixHeader_pch */
