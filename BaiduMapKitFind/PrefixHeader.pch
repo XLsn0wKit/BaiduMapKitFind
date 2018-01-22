@@ -38,7 +38,7 @@
 
 #define kScreen [UIScreen mainScreen].bounds
 #define kScreenHeight kScreen.size.height
-#define kScreenWidth kScreen.size.width
+#define kScreenWidth  kScreen.size.width
 #define font(fontSize) [UIFont systemFontOfSize:fontSize]
 
 #define setTextGrayColor [UIColor colorWithRed:118/255. green:118/255. blue:118/255. alpha:1.]

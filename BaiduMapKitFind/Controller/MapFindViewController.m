@@ -7,8 +7,7 @@
 @property (nonatomic, strong) BMKLocationService *locService;//定位服务
 @property (nonatomic, assign) float zoomValue;//移动或缩放前的比例尺
 @property (nonatomic, assign) CLLocationCoordinate2D oldCoor;//地图移动前中心经纬度
-
-@property(nonatomic, strong) RectangleAnnotationView *messageA;//记录点击过的大头针。便于点击空白时。把这个大头针缩小为原始大小
+@property (nonatomic, strong) RectangleAnnotationView *messageA;//记录点击过的大头针。便于点击空白时。把这个大头针缩小为原始大小
 
 @end
 
@@ -17,9 +16,8 @@
 #pragma mark -- Life Cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = setWhiteColor;
     self.title = @"显示电站";
-    [self setupUI];
+    [self addUI];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -36,6 +34,7 @@
     [self.locService stopUserLocationService];
   
 }
+
 - (void)dealloc {
     if (self.bMapView) {
         self.bMapView = nil;
@@ -47,9 +46,8 @@
 
 #pragma mark -- UI
 
-- (void)setupUI {
-
-    
+/// 核心思想 是利用比例尺判断
+- (void)addUI {
     self.bMapView = [[BMKMapView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
     [self.view addSubview:self.bMapView];
     self.locService = [[BMKLocationService alloc] init];
@@ -59,7 +57,7 @@
     self.bMapView.showMapScaleBar = YES;//显示比例尺
     self.bMapView.mapScaleBarPosition = CGPointMake(10, 75);//比例尺位置
     self.bMapView.minZoomLevel = 9;
-    self.bMapView.maxZoomLevel = 19;
+    self.bMapView.maxZoomLevel = 19;///在手机上当前可使用的级别为3-21级
     self.bMapView.isSelectedAnnotationViewFront = YES;
     self.bMapView.userTrackingMode = BMKUserTrackingModeNone;
     [self.locService startUserLocationService];
@@ -72,17 +70,12 @@
         }
         //创建placemark对象
         CLPlacemark *placemark = [placemarks firstObject];
-        NSLog(@"%f,%f",placemark.location.coordinate.latitude,placemark.location.coordinate.longitude);
-        //赋值详细地址
-        NSLog(@"详细地址 %@",placemark.name);
         CLLocationCoordinate2D coor;
         coor.latitude = placemark.location.coordinate.latitude;
         coor.longitude = placemark.location.coordinate.longitude;
-        [self.bMapView setCenterCoordinate:coor];
-        [self.bMapView setZoomLevel:12];
-        self.zoomValue = 12;
+        self.zoomValue = 11;
+        self.bMapView.zoomLevel = self.zoomValue;
     }];
-
 }
 
 #pragma mark -- 回到用户的位置。
@@ -117,15 +110,14 @@
 
 #pragma mark -- BMMapViewDelegate
 
-//- (void)mapView:(BMKMapView *)mapView onClickedMapBlank:(CLLocationCoordinate2D)coordinate {
-//
-//    for (YLAnnotation *view in self.mapView.annotations) {
-//        if ([view.messageAnnoIsBig isEqualToString:@"yes"]) {
-//            //把放大过的大头针缩小
-//            [self.mapView deselectAnnotation:view animated:NO];
-//        }
-//    }
-//}
+- (void)mapView:(BMKMapView *)mapView onClickedMapBlank:(CLLocationCoordinate2D)coordinate {
+    for (BDAnnotation *view in self.bMapView.annotations) {
+        if ([view.messageAnnoIsBig isEqualToString:@"yes"]) {
+            //把放大过的大头针缩小
+            [self.bMapView deselectAnnotation:view animated:NO];
+        }
+    }
+}
 
 - (void)mapView:(BMKMapView *)mapView regionWillChangeAnimated:(BOOL)animated {
     self.zoomValue = mapView.zoomLevel;
@@ -340,7 +332,7 @@
         //计算距离 --> 请求列表数据 --> 完成 --> 展示表格
 //        self.communityId = annotationView.Id;
 
-    }else {
+    } else {
         //点击了区域--->进入小区
         //拿到大头针经纬度，放大地图。然后重新计算小区
         [mapView setCenterCoordinate:annotation.coordinate animated:NO];

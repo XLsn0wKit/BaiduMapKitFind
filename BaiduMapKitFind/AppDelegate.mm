@@ -2,8 +2,6 @@
 #import "AppDelegate.h"
 #import "MapFindViewController.h"
 
-BMKMapManager *_mapManager;
-
 @interface AppDelegate () <BMKGeneralDelegate>
 
 @end
@@ -17,7 +15,6 @@ BMKMapManager *_mapManager;
     self.window.backgroundColor = [UIColor whiteColor];
     UINavigationController *navC = [[UINavigationController alloc] initWithRootViewController:[MapFindViewController new]];
     self.window.rootViewController = navC;
-    //配置百度地图
     [self initBMKMap];
     return YES;
 }
@@ -25,9 +22,8 @@ BMKMapManager *_mapManager;
 #pragma mark -- 百度地图
 
 - (void)initBMKMap {
-    // 要使用百度地图，请先启动BaiduMapManager
-    _mapManager = [[BMKMapManager alloc] init];
-    BOOL ret = [_mapManager start:@"uRam3QY7cs3SYVpN0jBDcr6xF5X9TWZF" generalDelegate:self];
+    BMKMapManager *mapManager = [[BMKMapManager alloc] init];
+    BOOL ret = [mapManager start:@"M9XcskxhlYAfXQtK9KxHiUCQvyiBNneR" generalDelegate:self];
     if (!ret) {
         NSLog(@"manager start failed!");
     }
